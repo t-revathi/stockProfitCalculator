@@ -7,7 +7,10 @@ import (
 
 func calculateProfits(ctx context.Context, config Config) {
 
-	transactionData := loadCsvFile(config.InputFilePath)
+	transactionData, err := loadCsvFile(config.InputFilePath)
+	if err != nil {
+		return
+	}
 	fmt.Printf("%+v \n", transactionData)
 
 }

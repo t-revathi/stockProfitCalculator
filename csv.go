@@ -2,12 +2,13 @@ package main
 
 import (
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
 )
 
-func loadCsvFile(filePath string) map[int]map[string]string {
+func loadCsvFile(filePath string) (map[int]map[string]string, error) {
 	//TODO: check for file exists
 
 	//mydir, _ := os.Getwd()
@@ -17,12 +18,16 @@ func loadCsvFile(filePath string) map[int]map[string]string {
 
 	csvFile, fileErr := os.Open(filePath)
 	if fileErr != nil {
-		panic("error reading csv file " + fileErr.Error())
+		return nil, errors.New("error reading csv file " + fileErr.Error())
+
 	}
 
 	reader := csv.NewReader(csvFile)
 
-	records, _ := reader.ReadAll()
+	records, err := reader.ReadAll()
+	if err != nil {
+		return nil, errors.New("files is corrupted,couldn't read a file")
+	}
 
 	columnNames := getColumnNames(records[0])
 
@@ -39,7 +44,7 @@ func loadCsvFile(filePath string) map[int]map[string]string {
 		// panic("err")
 	}
 
-	return transactionData
+	return transactionData, nil
 }
 
 func getColumnNames(record []string) []string {

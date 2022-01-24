@@ -28,7 +28,9 @@ func loadCsvFile(filePath string) (map[int]map[string]string, error) {
 	if err != nil {
 		return nil, errors.New("files is corrupted,couldn't read a file")
 	}
-
+	if len(records) < 1 {
+		return nil, errors.New("no records in the file.fiile may be corrupted")
+	}
 	columnNames := getColumnNames(records[0])
 
 	transactionData := make(map[int]map[string]string)

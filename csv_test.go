@@ -15,8 +15,8 @@ var _ = Describe("Csv", func() {
 		Expect(err).ToNot(Equal(nil))
 	})
 
-	It("corrupted file or invalid file", func() {
-		_, err := loadCsvFile("stock1.txt")
+	It("corrupted file", func() {
+		_, err := loadCsvFile("stock1.csv")
 		Expect(err).ToNot(BeNil())
 		fmt.Println(err)
 	})

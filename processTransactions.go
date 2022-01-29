@@ -10,9 +10,9 @@ import (
 	"time"
 )
 
-func calculateProfits(ctx context.Context, config Config) {
+func calculateProfits(ctx context.Context, config Config,td TransactionData ) {
 
-	transactionData, err := loadCsvFile(config.InputFilePath)
+	transactionData, err := td.getTransactions(config.InputFilePath)
 	if err != nil {
 		return
 	}

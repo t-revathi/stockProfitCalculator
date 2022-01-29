@@ -1,6 +1,8 @@
 package main
 
-import "time"
+import (
+	"time"
+)
 
 type Config struct {
 	InputFilePath       string
@@ -27,3 +29,8 @@ type Income struct {
 	PandL         float32
 	SellUnitPrice float32
 }
+
+type TransactionData interface {
+	getTransactions(filepath string) (map[int]map[string]string, error)
+}
+

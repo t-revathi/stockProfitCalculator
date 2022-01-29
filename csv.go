@@ -7,8 +7,14 @@ import (
 	"os"
 	"strings"
 )
+type csvReader struct {}
+	
+func NewcsvReader() *csvReader{
+	return &csvReader{}
+}
 
-func loadCsvFile(filePath string) (map[int]map[string]string, error) {
+//func loadCsvFile(filePath string) (map[int]map[string]string, error)
+func (t *csvReader) getTransactions(filePath string) (map[int]map[string]string, error) {
 	//TODO: check for file exists
 
 	//mydir, _ := os.Getwd()

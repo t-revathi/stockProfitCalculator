@@ -34,6 +34,7 @@ func main() {
 		endFinancialMonth:   endFinancialMonth,
 		financialYear:       financialYear,
 	}
-	calculateProfits(ctx, config)
+	csvreader := NewcsvReader()
+	calculateProfits(ctx, config,csvreader)
 
 }

@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"flag"
+
+	"github.com/t-revathi/stockProfitCalculator/log"
 )
 
 func main() {
@@ -13,6 +15,7 @@ func main() {
 		startFinancialMonth string
 		endFinancialMonth   string
 		financialYear       string
+		logFileName         string
 	)
 	{
 		flag.StringVar(&inputFilePath, "input-csv", "TradeHistory.csv", "csv input file path")
@@ -20,6 +23,7 @@ func main() {
 		flag.StringVar(&startFinancialMonth, "start-financial-month", "july", "month when the financial year starts")
 		flag.StringVar(&endFinancialMonth, "end-financial-month", "jun", "month when the financial year ends")
 		flag.StringVar(&financialYear, "financial-year", "2021", "caluclulation for financial year")
+		flag.StringVar(&logFileName, "log-file-name", "deletelog", "Log file name")
 
 	}
 
@@ -34,7 +38,14 @@ func main() {
 		endFinancialMonth:   endFinancialMonth,
 		financialYear:       financialYear,
 	}
+
+	logger := log.Newlogger(0, logFileName)
+	logger.Info("Calling csv and calculate profits")
+	ctx = log.AddLoggerToContext(ctx, logger)
+
 	csvreader := NewcsvReader()
-	calculateProfits(ctx, config,csvreader)
+	c := NewCalculator(csvreader, config)
+	c.calculateProfits(ctx)
+	//calculateProfits(ctx, config,csvreader)
 
 }

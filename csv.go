@@ -1,27 +1,26 @@
 package main
 
 import (
+	"context"
 	"encoding/csv"
 	"errors"
-	"fmt"
 	"os"
 	"strings"
+
+	"github.com/t-revathi/stockProfitCalculator/log"
 )
-type csvReader struct {}
-	
-func NewcsvReader() *csvReader{
+
+type csvReader struct{}
+
+func NewcsvReader() *csvReader {
 	return &csvReader{}
 }
 
 //func loadCsvFile(filePath string) (map[int]map[string]string, error)
-func (t *csvReader) getTransactions(filePath string) (map[int]map[string]string, error) {
+func (t *csvReader) getTransactions(ctx context.Context, filePath string) (map[int]map[string]string, error) {
 	//TODO: check for file exists
 
-	//mydir, _ := os.Getwd()
-	//filePath = filePath
-
-	fmt.Println("trying to process the file - " + filePath)
-
+	log.Debug(ctx, "trying to process the file - "+filePath)
 	csvFile, fileErr := os.Open(filePath)
 	if fileErr != nil {
 		return nil, errors.New("error reading csv file " + fileErr.Error())

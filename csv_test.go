@@ -3,14 +3,19 @@ package main
 import (
 	"fmt"
 
+	"context"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Csv", func() {
+	ctx := context.TODO()
+
 	It("Invalid path to csv file or no file found", func() {
 		var csv = csvReader{}
-		_, err := csv.getTransactions("aa.csv")
+
+		_, err := csv.getTransactions(ctx, "aa.csv")
 		fmt.Println("Invalid path to csv file or no file found", err)
 
 		Expect(err).ToNot(Equal(nil))
@@ -19,7 +24,7 @@ var _ = Describe("Csv", func() {
 	It("corrupted file", func() {
 
 		var csv = csvReader{}
-		_, err := csv.getTransactions("stock1.csv")
+		_, err := csv.getTransactions(ctx, "stock1.csv")
 		Expect(err).ToNot(BeNil())
 		fmt.Println(err)
 	})

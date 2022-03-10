@@ -9,10 +9,9 @@ import (
 
 	"github.com/t-revathi/stockProfitCalculator/log"
 )
-
-type csvReader struct{}
-
-func NewcsvReader() *csvReader {
+type csvReader struct {}
+	
+func NewcsvReader() *csvReader{
 	return &csvReader{}
 }
 

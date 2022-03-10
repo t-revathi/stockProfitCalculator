@@ -29,20 +29,33 @@ func Newlogger(logLevel zerolog.Level, tempFileName string) *UtilLogger {
 	//fileLogger = fileLogger.With().Str("foo", "bar").Logger()
 	return &UtilLogger{fileLogger}
 }
+func AddLoggerToContext(ctx context.Context, logger *UtilLogger) context.Context {
+	ctx = context.WithValue(ctx, &LoggerKey{}, logger)
+	return ctx
+}
+
+func getLoggerFromContext(ctx context.Context) *UtilLogger {
+
+	ctxloggerInterface := ctx.Value(&LoggerKey{})
+
+	if ctxloggerInterface == nil {
+		return nil
+	}
+
+	return ctxloggerInterface.(*UtilLogger)
+
+}
+
 func (ul *UtilLogger) Debug(msg string) {
 	ul.fileLogger.Debug().Msg(msg)
 }
 
 func Debug(ctx context.Context, msg string) {
-	ctxlogger := ctx.Value(&LoggerKey{})
-	ctxlogger1 := ctxlogger.(*UtilLogger)
 
-	ctxlogger1.Debug(msg)
-}
+	if ctxlogger1 := getLoggerFromContext(ctx); ctxlogger1 != nil {
 
-func AddLoggerToContext(ctx context.Context, logger *UtilLogger) context.Context {
-	ctx = context.WithValue(ctx, &LoggerKey{}, logger)
-	return ctx
+		ctxlogger1.Debug(msg)
+	}
 }
 
 func (ul *UtilLogger) Info(msg string) {
@@ -50,25 +63,27 @@ func (ul *UtilLogger) Info(msg string) {
 }
 
 func Info(ctx context.Context, msg string) {
-	ctxlogger := ctx.Value(&LoggerKey{})
-	ctxlogger1 := ctxlogger.(*UtilLogger)
-	ctxlogger1.Info(msg)
+	if ctxlogger1 := getLoggerFromContext(ctx); ctxlogger1 != nil {
+		ctxlogger1.Info(msg)
+	}
+
 }
 func (ul *UtilLogger) Error(msg string, err error) {
 	ul.fileLogger.Error().Err(err).Msg(msg)
 }
 func Error(ctx context.Context, msg string, err error) {
-	ctxlogger := ctx.Value(&LoggerKey{})
-	ctxlogger1 := ctxlogger.(*UtilLogger)
-	ctxlogger1.Error(msg, err)
+
+	if ctxlogger1 := getLoggerFromContext(ctx); ctxlogger1 != nil {
+		ctxlogger1.Error(msg, err)
+	}
 }
 func (ul *UtilLogger) Warning(msg string) {
 	ul.fileLogger.Warn().Msg(msg)
 }
 func Warning(ctx context.Context, msg string) {
-	ctxlogger := ctx.Value(&LoggerKey{})
-	ctxlogger1 := ctxlogger.(*UtilLogger)
-	ctxlogger1.Warning(msg)
+	if ctxlogger1 := getLoggerFromContext(ctx); ctxlogger1 != nil {
+		ctxlogger1.Warning(msg)
+	}
 }
 func (ul *UtilLogger) Fatal(msg string, err error) {
 	ul.fileLogger.Fatal().Err(err).Msg(msg)

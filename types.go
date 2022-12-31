@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"time"
 )
 
@@ -31,6 +32,6 @@ type Income struct {
 }
 
 type TransactionData interface {
-	getTransactions(filepath string) (map[int]map[string]string, error)
+	getTransactions(ctx context.Context,filepath string) (map[int]map[string]string, error)
 }
 

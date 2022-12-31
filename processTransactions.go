@@ -8,16 +8,32 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/t-revathi/stockProfitCalculator/log"
 )
 
-func calculateProfits(ctx context.Context, config Config,td TransactionData ) {
+type Calculator struct {
+	t      TransactionData
+	config Config
+}
 
-	transactionData, err := td.getTransactions(config.InputFilePath)
+func NewCalculator(t TransactionData, config Config) *Calculator {
+	return &Calculator{
+		t:      t,
+		config: config,
+	}
+}
+
+func (c *Calculator) calculateProfits(ctx context.Context) {
+
+	config := c.config
+	transactionData, err := c.t.getTransactions(ctx, config.InputFilePath)
 	if err != nil {
+		log.Error(ctx, "Error processing file:", err)
 		return
 	}
 	//fmt.Printf("%+v \n", transactionData)
-	transactions := mapToStruct(transactionData)
+	transactions := mapToStruct(ctx, transactionData)
 	income := processTrans(transactions, config)
 	for idx, val := range income {
 
@@ -157,7 +173,7 @@ func Abs(value int) int {
 	return value
 }
 
-func mapToStruct(transactionData map[int]map[string]string) []Transaction {
+func mapToStruct(ctx context.Context, transactionData map[int]map[string]string) []Transaction {
 
 	transactions := make([]Transaction, 0)
 
@@ -166,15 +182,15 @@ func mapToStruct(transactionData map[int]map[string]string) []Transaction {
 		transaction := Transaction{}
 
 		//fmt.Println(t["activity"])
-		transaction.Date = getDate(t["date"])
+		transaction.Date = getDate(ctx, t["date"])
 		//fmt.Println(transaction.Date)
 		transaction.Market = t["market"]
-		transaction.Cost = getFloat(t["cost/proceeds"])
+		transaction.Cost = getFloat(ctx, t["cost/proceeds"])
 		transaction.Direction = t["direction"]
-		transaction.Price = getFloat(t["price"])
+		transaction.Price = getFloat(ctx, t["price"])
 		transaction.Activity = t["activity"]
 
-		transaction.Quantity = (getInt(t["quantity"]))
+		transaction.Quantity = (getInt(ctx, t["quantity"]))
 		unitPrice := float64((transaction.Cost / float32(transaction.Quantity)))
 		transaction.UnitPrice = float32(math.Abs(unitPrice))
 
@@ -183,26 +199,27 @@ func mapToStruct(transactionData map[int]map[string]string) []Transaction {
 
 	return transactions
 }
-func getInt(data string) int {
+func getInt(ctx context.Context, data string) int {
 	value, err := strconv.ParseInt(data, 10, 0)
 
 	if err != nil {
-		panic(err)
+		//panic(err)
+		log.Fatal(ctx, "", err)
 	}
 	//return int(value)
 	return int(math.Abs(float64(value)))
 }
 
-func getFloat(data string) float32 {
+func getFloat(ctx context.Context, data string) float32 {
 	value, err := strconv.ParseFloat(data, 32)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(ctx, "", err)
 	}
 	return float32(value)
 }
 
-func getDate(data string) time.Time {
+func getDate(ctx context.Context, data string) time.Time {
 	str := strings.Split(data, "/")
 	//convert date from dd/mm/yyyy to mm/dd/yyyy
 	data = str[1] + "/" + str[0] + "/" + str[2]
@@ -210,7 +227,7 @@ func getDate(data string) time.Time {
 	t, err := time.Parse("1/2/2006", data)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(ctx, "", err)
 	}
 
 	return t
